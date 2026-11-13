@@ -58,6 +58,40 @@ a{color:var(--acc)}
 .s h4 .ask{margin-left:auto}
 li .ask{margin-left:6px;padding:1px 8px}
 .all{margin:0;padding:8px 0 2px 14px}
+.leg{flex-wrap:wrap;margin:8px 0}
+.leg[hidden]{display:none}
+.clk{margin:8px 0 0;color:var(--mute);font-size:13.5px}
+.clk:empty{display:none}
+.clk b{color:var(--ink)}
+.pr{display:flex;align-items:center;gap:10px;margin:8px 0 0;color:var(--mute);font-size:13px}
+.pr[hidden]{display:none}
+.bar{flex:1;display:flex;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;width:0;transition:width .2s}
+#pb1{background:var(--g1)}
+#pb2{background:var(--g2)}
+.act{display:flex;gap:8px;margin:0 0 12px}
+.act button{font:inherit;font-size:13px;color:var(--acc);background:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+.act #snd{color:var(--bg);background:var(--acc);border-color:var(--acc)}
+.act #zh{margin-left:auto}
+.dot.mk{width:22px;height:22px;border-color:var(--mute);background:none;position:relative;display:inline-flex;align-items:center;justify-content:center;color:var(--card);font-size:13px;font-weight:700;line-height:1}
+.leg .dot.mk{width:18px;height:18px;font-size:11px}
+.r .dot.mk{margin-top:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.r .dot.mk::before{content:"";position:absolute;top:-9px;right:-9px;bottom:-9px;left:-9px}
+.dot.mk.m1{background:var(--g1);border-color:var(--g1)}
+.dot.mk.m1::after{content:"\2713"}
+.dot.mk.m2{background:var(--g2);border-color:var(--g2)}
+.dot.mk.m2::after{content:"?"}
+.cnt{flex:none;color:var(--mute);font-size:12.5px;font-weight:400;white-space:nowrap}
+.cnt i{font-style:normal;font-weight:700;color:var(--g2);margin-left:5px}
+.cnt.ok{color:var(--g1);font-weight:700}
+.tw[data-m] .r>.dot{border-radius:2px;border-color:var(--acc);transform:rotate(45deg);margin:6px 6px 0}
+a.go,a.ext{font-weight:600}
+a.go::after{content:" \203A"}
+#ov{position:fixed;top:0;right:0;bottom:0;left:0;z-index:10;display:flex;flex-direction:column;background:var(--bg)}
+#ov[hidden]{display:none}
+.ovb{flex:none;display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.ovb button{font:inherit;font-size:14px;color:var(--acc);background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+#ovf{flex:1;width:100%;border:0;background:var(--bg)}
 </style>
 </head>
 <body>
@@ -65,7 +99,10 @@ li .ask{margin-left:6px;padding:1px 8px}
 <header>
 <h1>Дерево трейдера</h1>
 <p class="sub">Сім гілок. Спершу скелет, м'ясо наростає від питань.</p>
-<p class="leg"><span class="dot on"></span>розкрито<span class="dot"></span>ще ні<button type="button" id="zh">згорнути все</button></p>
+<p class="clk" id="clk" title="Свята біржі не враховано"></p>
+<p class="pr" id="pr" hidden><span class="bar"><i id="pb1"></i><i id="pb2"></i></span><span id="pc"></span></p>
+<p class="leg" id="lg" hidden>Торкнись кружка:<span class="dot mk m1"></span>розумію, ще раз<span class="dot mk m2"></span>не розумію</p>
+<p class="act"><button type="button" id="snd" hidden>Надіслати позначки в чат</button><button type="button" id="zh">згорнути все</button></p>
 </header>
 
 <details class="b" id="rynok">
@@ -99,7 +136,21 @@ li .ask{margin-left:6px;padding:1px 8px}
 <p><b>Зв'язок.</b> Поза основною сесією широкий spread, лише limit-ордери, стопи зазвичай не спрацьовують. Межі основної сесії це аукціони відкриття і закриття.</p>
 </div>
 </details>
-<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Аукціони відкриття і закриття</b><small>дві точки дня, де сходиться найбільший обсяг</small></span></div></div>
+<details class="tw" data-l="1">
+<summary class="r"><span class="dot on"></span><span class="x"><b>Аукціони відкриття і закриття</b><small>дві точки дня, де сходиться найбільший обсяг</small></span></summary>
+<div class="leaf">
+<p>Аукціон це одна спільна ціна на відкритті й закритті: біржа збирає всі заявки і зводить їх в одну угоду.</p>
+<ul>
+<li>Early Open 04:00 ET (13:00 Дубай): лише на NYSE Arca.</li>
+<li>Відкриття 09:30 ET (18:30 Дубай): заявки з TIF OPG; MOO за ринком, LOO з лімітом.</li>
+<li>Закриття 16:00 ET (01:00 Дубай): TIF CLO; MOC за ринком, LOC з лімітом; на Nasdaq це зветься Closing Cross.</li>
+<li>Imbalance: перекіс заявок перед аукціоном; підказує, у який бік потягне ціну.</li>
+<li>DMM: учасник, що веде аукціон на NYSE.</li>
+</ul>
+<p><b>Навіщо.</b> Закриття це найбільша одна угода дня, а за його ціною рахують фонди й індекси.</p>
+<p><b>Чесно.</b> Час за Дубаєм зимовий (з 01.11.2026).</p>
+</div>
+</details>
 <details class="tw" data-l="1">
 <summary class="r"><span class="dot on"></span><span class="x"><b>Хто по той бік</b><small>маркетмейкери, фонди, алгоритми, роздріб: у кожного своя мета</small></span></summary>
 <div class="leaf">
@@ -112,6 +163,14 @@ li .ask{margin-left:6px;padding:1px 8px}
 </ul>
 <p><b>Приклад.</b> Акція повільно лізе вгору весь день на рівних порціях у стрічці, найчастіше це фонд набирає позицію шматками.</p>
 <p><b>Зв'язок.</b> Удень (основна сесія) тут усі чотири, тому ринок густий; уночі лишаються переважно маркетмейкери, алгоритми і роздріб, тому він тонкий. Хто стоїть у черзі, видно в стакані.</p>
+</div>
+</details>
+<p class="note">Матеріали</p>
+<details class="tw" data-m="1">
+<summary class="r"><span class="dot"></span><span class="x"><b>Карта ринку</b><small>жива карта: сектори, новини дня, годинник сесій</small></span></summary>
+<div class="leaf">
+<p>Жива карта ринку: сектори, новини дня і годинник сесій. Оновлюється сама кожні кілька хвилин. Відкривається тут же, назад кнопкою «Дерево».</p>
+<p><a class="go" href="../" data-t="Карта ринку">Відкрити карту</a></p>
 </div>
 </details>
 </div>
@@ -234,6 +293,37 @@ li .ask{margin-left:6px;padding:1px 8px}
 </details>
 
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>ETF</b><small>один тікер, а всередині цілий кошик акцій</small></span></div></div>
+<p class="note">Матеріали</p>
+<details class="tw" data-m="1">
+<summary class="r"><span class="dot"></span><span class="x"><b>Russell 2000: розбір</b><small>індекс малих компаній США: склад, рівні, що його рухає</small></span></summary>
+<div class="leaf">
+<p class="one">2 000 малих компаній США. Близько 80% виручки вони заробляють удома і живуть у борг, тому індекс найгостріше чує тарифи і ставку Fed.</p>
+<ul>
+<li><b>Що це.</b> Індекс з 1984 року, веде FTSE Russell. За капіталізацією місця 1–1000 це Russell 1000, місця 1001–3000 це Russell 2000. Жодна компанія не домінує: найбільша важить 0,46%, десятка разом 3,4%.</li>
+<li><b>Склад.</b> Капіталізація близько 3,5 трлн $, це 5% ринку акцій США. Медицина 21%, фінанси 19%, технології 12,75%. Близько 40% компаній збиткові.</li>
+<li><b>Чим торгувати.</b> ETF: IWM (головний, 77,8 млрд $), VTWO, IWN (value), IWO (growth), TNA і TZA (потрійне плече), RWM (ставка на падіння).</li>
+<li><b>Рівні.</b> Опір 3 030–3 070 (рекорд близько 3 070 від 14.08.2026) і 2 900–2 950. Ключова підтримка 2 700–2 735. Нижче 2 480–2 500, 2 300–2 320, 2 100–2 150. Дно квітня 2025: 1 733–1 830.</li>
+<li><b>Найсильніші дні.</b> +8,66% 09.04.2025 (пауза тарифів на 90 днів), −6,59% 03.04.2025 (тарифи на весь імпорт), −4,39% 18.12.2024 (Fed пообіцяв менше знижень ставки). Чотири з шести найсильніших днів це тарифи або ставка.</li>
+<li><b>Барометр.</b> IWM проти SPY: лінія вгору, ринок розширюється і гроші йдуть у ризик. За 5 років малі +17%, S&amp;P 500 +60%.</li>
+<li><b>Перегляд складу.</b> З 2026 двічі на рік, у червні та грудні. Найближчий: зміни чинні після закриття 11.12.2026, новий склад торгується з 14.12.2026.</li>
+</ul>
+<p class="src">Цифри на 09–10.11.2026, вони старіють.</p>
+</div>
+</details>
+<details class="tw" data-m="1">
+<summary class="r"><span class="dot"></span><span class="x"><b>Consumer Discretionary (XLY): розбір</b><small>товари вибору: склад, лідери, борг, чим торгувати</small></span></summary>
+<div class="leaf">
+<p class="one">Те, без чого можна обійтись: авто, одяг, ресторани, подорожі, онлайн-покупки. Сектор циклічний: у добрі часи росте швидше за ринок, у погані падає глибше.</p>
+<ul>
+<li><b>Місце.</b> 9,6% S&amp;P 500, 47 компаній, четвертий з 11 секторів. Код GICS 25, чотири групи: автомобілі; товари тривалого вжитку та одяг; споживчі послуги; ритейл.</li>
+<li><b>Лідери.</b> Amazon 22,53% і Tesla 17,55%, разом 40%. Десятка (ще Home Depot, McDonald's, TJX, Lowe's, Starbucks, Booking, Marriott, Hilton) це 67,8% фонду. Дивишся на XLY, бачиш переважно дві акції.</li>
+<li><b>Характер.</b> Бета 1,21: ринок на 1%, сектор приблизно на 1,2%. P/E 27,09, прогноз росту прибутку 19,55% на 3–5 років.</li>
+<li><b>Борг.</b> Debt/Equity 1,12, операційна маржа 7,72%, найнижча з 11 секторів. Тому сектор чутливий до ставки: дорожчий кредит б'є і по компаніях, і по покупцях.</li>
+<li><b>Чим торгувати.</b> XLY (23,33 млрд $, комісія 0,08%), VCR, FDIS. Вужчі: ITB і XHB (будівництво житла), XRT (ритейл).</li>
+</ul>
+<p class="src">Цифри на 11–13.11.2026: State Street, Finviz, StockAnalysis. Вони старіють.</p>
+</div>
+</details>
 </div>
 </details>
 
@@ -246,6 +336,19 @@ li .ask{margin-left:6px;padding:1px 8px}
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Нафта, долар, геополітика</b><small>зовнішні поштовхи, що б'ють по окремих секторах</small></span></div></div>
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Потік грошей між секторами</b><small>ротація: шість зв'язків уже є в гілці <a href="#sektory">11 секторів</a></small></span></div></div>
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Календар тижня</b><small>що і коли смикне ринок найближчими днями</small></span></div></div>
+<p class="note">Матеріали</p>
+<details class="tw" data-m="1">
+<summary class="r"><span class="dot"></span><span class="x"><b>Investing.com</b><small>календар подій, скринер і алерти</small></span></summary>
+<div class="leaf">
+<p class="one">Ціна реагує не на саму цифру, а на сюрприз: наскільки факт розійшовся з прогнозом.</p>
+<ul>
+<li><b>Календар</b> це годинник: коли вийдуть дані і який прогноз. Макродані США о 08:30 ET, рішення FOMC о 14:00 ET (узимку це 17:30 і 23:00 за Дубаєм).</li>
+<li><b>Скринер</b> це сито: з тисяч акцій лишає ті, що проходять твої умови.</li>
+<li><b>Алерт</b> це дзвоник: сам покличе, коли ціна дійде до рівня чи вийде подія.</li>
+</ul>
+<p><a class="ext" href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener">Економічний календар</a></p>
+</div>
+</details>
 </div>
 </details>
 
@@ -365,6 +468,19 @@ li .ask{margin-left:6px;padding:1px 8px}
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Денний ліміт</b><small>межа, після якої день закінчено</small></span></div></div>
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Сімейства стратегій</b><small>імпульс, повернення до середнього, пари, новини</small></span></div></div>
 <p class="note">Яка стратегія буде твоєю, ще не відомо: тут поки лише загальна мова.</p>
+<p class="note">Матеріали</p>
+<details class="tw" data-m="1">
+<summary class="r"><span class="dot"></span><span class="x"><b>Рахунок у голові</b><small>скільки акцій брати і скільки R дає угода; приклади вигадані</small></span></summary>
+<div class="leaf">
+<p class="one">Спершу вирішуєш, скільки готовий втратити, і лише з цього рахуєш кількість акцій.</p>
+<ul>
+<li><b>Розмір позиції.</b> Ризик ділиш на відстань до стопа. Ризик 50 $, вхід 10,05, стоп 9,93: 50 / 0,12 = 416 акцій.</li>
+<li><b>R.</b> Скільки ризиків дає ціль: (ціль − вхід) / (вхід − стоп). Ціль 10,45: 0,40 / 0,12 = 3,3R.</li>
+<li><b>Гроші.</b> Ціна дійшла до 10,30: (10,30 − 10,05) × 416 = 104 $.</li>
+</ul>
+<p>Тренажери швидкого рахунку: <a class="ext" href="https://arithmetic.zetamac.com/" target="_blank" rel="noopener">zetamac.com</a>, <a class="ext" href="https://tradermath.org/" target="_blank" rel="noopener">tradermath.org</a>.</p>
+</div>
+</details>
 </div>
 </details>
 
@@ -384,13 +500,57 @@ li .ask{margin-left:6px;padding:1px 8px}
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Дисципліна</b><small>робити те, що вирішив заздалегідь</small></span></div></div>
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Людський фактор</b><small>азарт, страх, бажання відігратись</small></span></div></div>
 <div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Розбір</b><small>що зробив, чому і що з цього вийшло</small></span></div></div>
+<p class="note">Матеріали</p>
+<details class="tw" data-m="1">
+<summary class="r"><span class="dot"></span><span class="x"><b>Книга: One Good Trade</b><small>Mike Bellafiore, 2010: як думає і працює проп-трейдер</small></span></summary>
+<div class="leaf">
+<p class="one">Хороший трейд це трейд за планом, а не той, що дав гроші.</p>
+<p>Стрижень: правила понад усе; ризик вирішений до входу; у мінус не докуповувати.</p>
+<p>Глави за хвилинами аудіо (скорочена версія, 6 год 42 хв). Біля глави «?», і розберемо її разом.</p>
+<ul>
+<li><b>Гл. 1 These Guys Are Good</b>, з 00:00</li>
+<li><b>Гл. 2 One Good Trade</b>, з 00:20</li>
+<li><b>Гл. 3 A Good Fit</b>, з 00:55</li>
+<li><b>Гл. 4 Pyramid of Success</b>, з 01:35</li>
+<li><b>Гл. 5 Why Traders Fail</b>, з 02:10</li>
+<li><b>Гл. 6 Live to Play Another Day</b>, з 02:40</li>
+<li><b>Гл. 7 Stocks In Play</b>, з 03:05</li>
+<li><b>Гл. 8 Reading the Tape</b>, з 03:35</li>
+<li><b>Гл. 9 Scoring</b>, з 04:15</li>
+<li><b>Гл. 10 Trader Education</b>, з 04:50</li>
+<li><b>Гл. 11 The Best Teacher</b>, з 05:25</li>
+<li><b>Гл. 12 Adapt to the Markets</b>, далі</li>
+<li><b>Гл. 13 The Successful Trader</b>, наприкінці</li>
+</ul>
+</div>
+</details>
+<details class="tw" data-m="1">
+<summary class="r"><span class="dot"></span><span class="x"><b>Lance Breitstein</b><small>проп-трейдер з 2011: шість тем, з яких складається його підхід</small></span></summary>
+<div class="leaf">
+<p class="one">Одна угода нічого не доводить. Рахується перевага на сотні угод і ризик, який дає до них дожити.</p>
+<ul>
+<li><b>Тренд.</b> Куди ціна вже йде. За рухом іти легше, ніж проти нього.</li>
+<li><b>EV</b>, очікувана вигода: шанс виграшу на виграш мінус шанс програшу на програш. Угоду оцінюють за цим числом, а не за одним результатом.</li>
+<li><b>Edge</b>, перевага: причина, чому EV у тебе додатне. Нема причини, нема угоди.</li>
+<li><b>Ризик.</b> Скільки втрачаєш, якщо помилився. Відомо до входу.</li>
+<li><b>Report card</b>, оцінка себе: після дня оцінка за рішення, а не за гроші.</li>
+<li><b>Playbook</b>, збірка своїх сетапів: для кожного умова, вхід, стоп, ціль.</li>
+</ul>
+<p class="src">Терміни пояснено загально, не його словами. Слухати: подкаст Chat With Traders, випуски 228, 229, 236.</p>
+</div>
+</details>
 </div>
 </details>
 </main>
+<div id="ov" hidden>
+<div class="ovb"><button type="button" id="ovx" aria-label="Назад до дерева"></button><b id="ovt"></b></div>
+<iframe id="ovf" title="Матеріал"></iframe>
+</div>
 <script>
 (function(){
   // Читається всюди; у Telegram додає кнопки «Спитати», що шлють назву гілочки в чат.
   var KEY='derevo.v1',main=document.querySelector('main'),src=main.innerHTML,tg=false,ready=false,tm=0;
+  var MK='derevo.m1',SK='derevo.ms',marks={},mt=0;
   function ls(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
   function txt(e){return e?e.textContent.replace(/\s+/g,' ').trim():''}
   function own(e){var a=[];e.childNodes.forEach(function(n){if(n.classList&&n.classList.contains('ask'))return;var s=txt(n);if(s)a.push(s)});return a.join(' ')}
@@ -448,6 +608,105 @@ li .ask{margin-left:6px;padding:1px 8px}
       box.appendChild(p);
     });
   }
+  // Позначки: дотик до кружка. 0 нема, 1 розумію, 2 не розумію. Живуть у пам'яті пристрою і в хмарі Telegram.
+  function tgw(){var w=window.Telegram&&Telegram.WebApp;return w&&w.platform&&w.platform!=='unknown'?w:null}
+  function hash(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36)}
+  function mid(t){return hash(branch(t)+'/'+twig(t))}
+  function mload(){try{var s=JSON.parse(localStorage.getItem(MK))||{};marks=s.m||{};mt=s.t||0}catch(e){marks={};mt=0}}
+  function mstr(){return JSON.stringify({m:marks,t:mt})}
+  function cloud(){var w=tgw();try{if(w&&w.CloudStorage&&w.isVersionAtLeast&&w.isVersionAtLeast('6.9'))return w.CloudStorage}catch(e){}return null}
+  function mput(){var c=cloud(),s=mstr();if(c&&s.length<4000)try{c.setItem('m1',s)}catch(e){}}
+  function msave(){mt=Date.now();try{localStorage.setItem(MK,mstr())}catch(e){}mput()}
+  function sent(){try{return +localStorage.getItem(SK)||0}catch(e){return 0}}
+  function paint(){
+    var all=0,a=0,q=0;
+    main.querySelectorAll('details.b').forEach(function(b){
+      var n=0,k=0,u=0;
+      b.querySelectorAll('.in .tw:not([data-m])').forEach(function(t){
+        var d=t.querySelector('.r>.dot');if(!d)return;
+        var v=marks[mid(t)]||0;
+        d.className='dot'+(d.classList.contains('on')?' on':'')+' mk'+(v===1||v===2?' m'+v:'');
+        d.setAttribute('role','button');
+        d.setAttribute('aria-label',v===1?'розумію':v===2?'не розумію':'без позначки');
+        n++;if(v===1)k++;if(v===2)u++;
+      });
+      var s=b.querySelector('summary'),c=s&&s.querySelector('.cnt');
+      if(s&&!c){c=document.createElement('span');c.className='cnt';s.appendChild(c)}
+      if(c){c.className='cnt'+(n&&k===n?' ok':'');c.textContent=k+'/'+n;if(u){var i=document.createElement('i');i.textContent='?'+u;c.appendChild(i)}}
+      all+=n;a+=k;q+=u;
+    });
+    var p=document.getElementById('pr'),b1=document.getElementById('pb1'),b2=document.getElementById('pb2'),pc=document.getElementById('pc'),sn=document.getElementById('snd'),lg=document.getElementById('lg');
+    if(lg)lg.hidden=false;
+    if(p&&b1&&b2&&pc&&all){p.hidden=false;b1.style.width=(100*a/all)+'%';b2.style.width=(100*q/all)+'%';pc.textContent='Розумію '+a+' з '+all+(q?' · не розумію '+q:'')}
+    if(sn)sn.hidden=!(tg&&(a+q)>0&&mt>sent());
+  }
+  function bytes(s){try{return new TextEncoder().encode(s).length}catch(e){return s.length*2}}
+  function report(){
+    var no=[],ok=[],cn=[],nq=0,nk=0;
+    main.querySelectorAll('details.b').forEach(function(b){
+      var g=txt(b.querySelector('.t').firstChild),x=[],y=[];
+      b.querySelectorAll('.in .tw:not([data-m])').forEach(function(t){
+        var v=marks[mid(t)]||0,n=twig(t);
+        if(v===2)x.push(n);if(v===1)y.push(n);
+      });
+      if(x.length){no.push(g+': '+x.join('; '));nq+=x.length}
+      if(y.length){ok.push(g+': '+y.join('; '));cn.push(g+' '+y.length);nk+=y.length}
+    });
+    var head='Позначки дерева.',a=nq?'\nНе розумію ('+nq+'):\n'+no.join('\n'):'',b=nk?'\nРозумію ('+nk+'):\n'+ok.join('\n'):'';
+    var s=head+a+b;
+    if(bytes(s)>3800){b=nk?'\nРозумію ('+nk+'): '+cn.join(', '):'';s=head+a+b}
+    while(bytes(s)>3800&&no.length>1){no.pop();s=head+'\nНе розумію ('+nq+'):\n'+no.join('\n')+'\nі ще інші гілки'+b}
+    return s;
+  }
+  function send(){
+    var w=tgw();if(!w||!w.sendData)return;
+    save();
+    try{localStorage.setItem(SK,String(mt))}catch(e){}
+    try{w.sendData(report())}catch(e){}
+    paint();
+  }
+  // Матеріал свого сайту відкривається поверх дерева, щоб Telegram не закривав апку.
+  function show(href,title){
+    var u;try{u=new URL(href,location.href)}catch(e){return false}
+    if(u.origin!==location.origin)return false;
+    var ov=document.getElementById('ov'),f=document.getElementById('ovf');
+    if(!ov||!f)return false;
+    var h=/tgWebApp/.test(location.hash)?location.hash:'';
+    if(f.getAttribute('data-u')!==u.pathname){f.setAttribute('data-u',u.pathname);f.src=u.pathname+u.search+h}
+    document.getElementById('ovt').textContent=title||'';
+    document.getElementById('ovx').textContent='‹ Дерево';
+    ov.hidden=false;document.body.style.overflow='hidden';
+    var w=tgw();try{if(w&&w.BackButton)w.BackButton.show()}catch(e){}
+    return true;
+  }
+  function shut(){
+    var ov=document.getElementById('ov');if(!ov||ov.hidden)return;
+    ov.hidden=true;document.body.style.overflow='';
+    var w=tgw();try{if(w&&w.BackButton)w.BackButton.hide()}catch(e){}
+  }
+  // Годинник сесій за часом Нью-Йорка; свята біржі не враховано.
+  function zone(tz){
+    try{
+      var o={};
+      new Intl.DateTimeFormat('en-US',{timeZone:tz,weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date()).forEach(function(p){o[p.type]=p.value});
+      return {d:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(o.weekday),h:parseInt(o.hour,10)%24,m:parseInt(o.minute,10)};
+    }catch(e){return null}
+  }
+  function two(n){return (n<10?'0':'')+n}
+  function left(m){var d=Math.floor(m/1440),h=Math.floor(m%1440/60);return (d?d+' д ':'')+(h?h+' год ':'')+(m%60)+' хв'}
+  function clock(){
+    var c=document.getElementById('clk'),e=zone('America/New_York'),u=zone('Asia/Dubai');
+    if(!c||!e||!u||e.d<0)return;
+    var t=e.h*60+e.m,d=e.d,wk=d>=1&&d<=5,n,l,r;
+    if((t>=1200&&d<=4)||(t<240&&wk)){n='нічна сесія';l='до premarket';r=t>=1200?1680-t:240-t}
+    else if(wk&&t<570){n='premarket';l='до відкриття';r=570-t}
+    else if(wk&&t<960){n='основна сесія';l='до закриття';r=960-t}
+    else if(wk&&t<1200){n='after-hours';l=d===5?'до кінця тижня':'до нічної сесії';r=1200-t}
+    else{n='ринок закрито';l='до нічної сесії';r=d===5?4080-t:d===6?2640-t:1200-t}
+    c.textContent='';
+    var b=document.createElement('b');b.textContent='Зараз '+n;c.appendChild(b);
+    c.appendChild(document.createTextNode(' · '+two(e.h)+':'+two(e.m)+' ET · '+two(u.h)+':'+two(u.m)+' Дубай · '+l+' '+left(r)));
+  }
   function wire(){
     var z=document.getElementById('zh');
     if(z)z.addEventListener('click',function(){
@@ -456,7 +715,7 @@ li .ask{margin-left:6px;padding:1px 8px}
     });
     document.querySelectorAll('details').forEach(function(d){d.addEventListener('toggle',save)});
   }
-  function setup(){wire();var y=restore();if(tg)buttons();return y}
+  function setup(){wire();var y=restore();if(tg)buttons();paint();clock();return y}
   function fresh(){
     // Свіжа версія повз кеш: гілочка, яку щойно дописали, видна одразу.
     if(!/^https?:$/.test(location.protocol)||!window.fetch||!window.DOMParser)return;
@@ -469,17 +728,51 @@ li .ask{margin-left:6px;padding:1px 8px}
     }).catch(function(){});
   }
   try{tg=/tgWebApp(Data|Version|Platform)=/.test(location.hash)}catch(e){}
-  var y=setup();ready=true;
+  mload();var y=setup();ready=true;
   if(!go()&&y)window.scrollTo(0,y);
   window.addEventListener('hashchange',go);
   window.addEventListener('pagehide',save);
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
   window.addEventListener('scroll',function(){clearTimeout(tm);tm=setTimeout(save,300)},{passive:true});
+  setInterval(clock,20000);
+  main.addEventListener('click',function(ev){
+    var el=ev.target;
+    if(!el||!el.closest)return;
+    var d=el.closest('.dot.mk'),t=d&&d.closest('.in .tw');
+    if(d&&t){
+      ev.preventDefault();ev.stopPropagation();
+      var id=mid(t),v=((marks[id]||0)+1)%3;
+      if(v)marks[id]=v;else delete marks[id];
+      msave();paint();
+      var w=tgw();try{if(w&&w.HapticFeedback)w.HapticFeedback.selectionChanged()}catch(e){}
+      return;
+    }
+    if(el.closest('#snd')){send();return}
+    var a=el.closest('a.go');
+    if(a){if(tg&&show(a.getAttribute('href'),a.getAttribute('data-t')))ev.preventDefault();return}
+    a=el.closest('a.ext');
+    if(a){var w2=tgw();if(w2&&w2.openLink){ev.preventDefault();try{w2.openLink(a.href)}catch(e){}}}
+  });
+  var ovf=document.getElementById('ovf'),ovx=document.getElementById('ovx');
+  if(ovx)ovx.addEventListener('click',shut);
+  if(ovf)ovf.addEventListener('load',function(){
+    // Нотатка з карти має піти в чат через головне вікно апки.
+    try{var w=tgw(),x=ovf.contentWindow.Telegram&&ovf.contentWindow.Telegram.WebApp;if(w&&x)x.sendData=function(d){w.sendData(d)}}catch(e){}
+  });
   document.addEventListener('DOMContentLoaded',function(){
     var w=window.Telegram&&Telegram.WebApp;
     if(!w||!w.platform||w.platform==='unknown')return;
     try{w.ready();w.expand()}catch(e){}
     if(!tg){tg=true;buttons()}
+    try{if(w.BackButton)w.BackButton.onClick(shut)}catch(e){}
+    paint();
+    var c=cloud();
+    if(c)try{c.getItem('m1',function(err,val){
+      if(err)return;
+      var s=null;try{s=val?JSON.parse(val):null}catch(e){}
+      if(s&&s.m&&(s.t||0)>mt){marks=s.m;mt=s.t;try{localStorage.setItem(MK,mstr())}catch(e){}paint()}
+      else if(mt&&(!s||(s.t||0)<mt))mput();
+    })}catch(e){}
   });
   fresh();
 })();
