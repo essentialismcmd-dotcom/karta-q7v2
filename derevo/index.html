@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Дерево трейдера</title>
+<script defer src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#f4f3ef;--card:#fff;--ink:#15171c;--mute:#646a75;--line:#dbd8cf;--acc:#1d4ed8;--g1:#0b8a57;--g2:#b26a00;--g3:#2563a8;--chip:#eceef2}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1014;--card:#171a20;--ink:#eceef2;--mute:#949ba8;--line:#2b303a;--acc:#8ab0ff;--g1:#3fcf8e;--g2:#e3a94b;--g3:#74b3ff;--chip:#232833}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:720px;margin:0 auto;padding:14px 10px 56px}
+h1{font-size:24px;line-height:1.15;margin:2px 0 4px}
+.sub{margin:0;color:var(--mute);font-size:14px}
+.leg{display:flex;align-items:center;gap:6px;margin:10px 0 12px;color:var(--mute);font-size:13px}
+.leg .dot:not(:first-child){margin-left:8px}
+.leg button{margin-left:auto;font:inherit;color:var(--acc);background:none;border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+.dot{flex:none;display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid var(--mute)}
+.dot.on{background:var(--g1);border-color:var(--g1)}
+details.b{background:var(--card);border:1px solid var(--line);border-radius:12px;margin:0 0 8px}
+summary{list-style:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"\203A";flex:none;align-self:center;color:var(--mute);font-size:22px;line-height:1;transition:transform .15s}
+details[open]>summary::after{transform:rotate(90deg)}
+details.b>summary{display:flex;align-items:center;gap:12px;padding:10px 12px}
+.n{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--card);font-weight:700;font-size:15px}
+.t{flex:1;min-width:0;font-weight:700;font-size:17px;line-height:1.2}
+small{display:block;font-weight:400;font-size:13px;line-height:1.3;color:var(--mute);margin-top:2px}
+.in{margin:0 10px 10px 26px;border-left:2px solid var(--line)}
+.tw{position:relative;padding:7px 0 7px 14px}
+.tw::before{content:"";position:absolute;left:0;top:18px;width:9px;border-top:2px solid var(--line)}
+.r{display:flex;gap:9px;align-items:flex-start}
+.r .dot{margin-top:5px}
+.x{flex:1;min-width:0}
+.x b{font-size:15.5px}
+.leaf{padding:8px 0 2px;font-size:15px}
+.leaf p{margin:0 0 8px}
+.leaf ul,.leaf ol{margin:0 0 8px;padding-left:20px}
+.leaf li{margin:0 0 7px}
+.leaf h3{font-size:16px;margin:14px 0 6px}
+.one{background:var(--chip);border-radius:10px;padding:8px 10px}
+.g{border-left:4px solid var(--c);padding-left:10px;margin:14px 0}
+.g1{--c:var(--g1)}.g2{--c:var(--g2)}.g3{--c:var(--g3)}
+.g>h3{margin:0;color:var(--c)}
+.g>.gt{color:var(--mute);font-size:13.5px;margin:1px 0 8px}
+.s{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:0 0 8px}
+.s h4{display:flex;align-items:center;gap:6px;margin:0 0 4px;font-size:15.5px}
+.tk{flex:none;font:700 13px/1 ui-monospace,Consolas,Menlo,monospace;background:var(--chip);border-radius:6px;padding:3px 6px}
+.s p{margin:2px 0;font-size:14.5px}
+.s i{font-style:normal;color:var(--mute)}
+.note,.src{color:var(--mute);font-size:13.5px}
+.note{padding:6px 0 0 14px;margin:0}
+a{color:var(--acc)}
+.ask{flex:none;align-self:center;font:inherit;font-size:13px;line-height:1.2;color:var(--acc);background:none;border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer;white-space:nowrap}
+.s h4 .ask{margin-left:auto}
+li .ask{margin-left:6px;padding:1px 8px}
+.all{margin:0;padding:8px 0 2px 14px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Дерево трейдера</h1>
+<p class="sub">Сім гілок. Спершу скелет, м'ясо наростає від питань.</p>
+<p class="leg"><span class="dot on"></span>розкрито<span class="dot"></span>ще ні<button type="button" id="zh">згорнути все</button></p>
+</header>
+
+<details class="b" id="rynok">
+<summary><span class="n">1</span><span class="t">Ринок<small>де і коли торгують</small></span></summary>
+<div class="in">
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Майданчики</b><small>одна акція торгується одразу в багатьох місцях: біржі NYSE і Nasdaq, електронні мережі (ECN), темні пули</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Сесії доби</b><small>premarket, основна, after-hours, нічна: коли є обсяг, а коли ринок тонкий</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Аукціони відкриття і закриття</b><small>дві точки дня, де сходиться найбільший обсяг</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Хто по той бік</b><small>маркетмейкери, фонди, алгоритми, роздріб: у кожного своя мета</small></span></div></div>
+</div>
+</details>
+
+<details class="b" id="shcho">
+<summary><span class="n">2</span><span class="t">Що торгують<small>акції, індекси, 11 секторів</small></span></summary>
+<div class="in">
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Акція і тікер</b><small>частка компанії та її коротке ім'я на біржі</small></span></div></div>
+
+<details class="tw" id="indeksy">
+<summary class="r"><span class="dot on"></span><span class="x"><b>Індекси</b><small>S&amp;P 500, Nasdaq 100, Dow, Russell 2000</small></span></summary>
+<div class="leaf">
+<p>Індекс це кошик акцій, який показує ринок одним числом. Торгують не самим числом, а фондом (ETF) чи ф'ючерсом, що його повторює.</p>
+<ul>
+<li><b>S&amp;P 500</b> (фонд SPY): 500 великих компаній США, вага за розміром компанії. Головна мірка ринку.</li>
+<li><b>Nasdaq 100</b> (QQQ): 100 найбільших нефінансових компаній біржі Nasdaq. Сильний перекіс у технології.</li>
+<li><b>Dow Jones</b> (DIA): 30 відомих компаній, вага за ціною акції. Стара і вузька мірка.</li>
+<li><b>Russell 2000</b> (IWM): 2000 малих компаній. Показує апетит до ризику і стан економіки всередині США.</li>
+</ul>
+<p><b>Зв'язок із секторами.</b> S&amp;P 500 складається з тих самих 11 секторів, тому рух найбільших секторів і є рух індексу.</p>
+</div>
+</details>
+
+<details class="tw" id="sektory">
+<summary class="r"><span class="dot on"></span><span class="x"><b>11 секторів</b><small>усі разом за 5 хвилин</small></span></summary>
+<div class="leaf">
+<p>Весь ринок акцій США поділено на 11 секторів (стандарт GICS). На кожен є фонд (ETF) з тікером на XL: один тікер показує весь сектор.</p>
+<p class="one"><b>Одним рядком.</b> Ріст: XLK, XLC, XLY. Економіка: XLF, XLI, XLB, XLE. Захист: XLP, XLV, XLU, XLRE.</p>
+<p>Три групи за тим, коли в них течуть гроші. Це спрощення, зате на нього все липне.</p>
+
+<section class="g g1">
+<h3>Ріст</h3>
+<p class="gt">купують, коли ринок сміливий і гроші дешеві</p>
+<div class="s"><h4><span class="tk">XLK</span>Technology</h4>
+<p><i>Що:</i> софт, залізо, чипи.</p>
+<p><i>Приклади:</i> Apple, Nvidia, Microsoft.</p>
+<p><i>Рухає:</i> витрати на AI та ставки.</p>
+<p><i>Розмір:</i> перший, 36,7% S&amp;P 500 (22.07.2026). Куди він, туди й індекс.</p>
+<p><i>Зв'язок:</i> продає чипи і хмару гігантам з XLC та XLY.</p></div>
+<div class="s"><h4><span class="tk">XLC</span>Communication Services</h4>
+<p><i>Що:</i> інтернет-реклама, соцмережі, стримінг, телеком.</p>
+<p><i>Приклади:</i> Alphabet, Meta, Netflix.</p>
+<p><i>Рухає:</i> рекламні бюджети бізнесу.</p>
+<p><i>Зв'язок:</i> ходить разом з XLK, бо ті самі гіганти будують AI і купують чипи.</p></div>
+<div class="s"><h4><span class="tk">XLY</span>Consumer Discretionary</h4>
+<p><i>Що:</i> те, без чого можна прожити: авто, онлайн-покупки, ресторани, подорожі.</p>
+<p><i>Приклади:</i> Amazon, Tesla, Home Depot.</p>
+<p><i>Рухає:</i> робота, зарплати і ціна кредиту.</p>
+<p><i>Розмір:</i> четвертий, 9,5% (11.11.2026).</p>
+<p><i>Зв'язок:</i> дзеркало до XLP. Дорогий бензин (XLE) і високі ставки забирають гроші в покупця.</p></div>
+</section>
+
+<section class="g g2">
+<h3>Економіка</h3>
+<p class="gt">ростуть і падають разом з реальною економікою</p>
+<div class="s"><h4><span class="tk">XLF</span>Financials</h4>
+<p><i>Що:</i> банки, страховики, платежі.</p>
+<p><i>Приклади:</i> JPMorgan, Berkshire Hathaway, Visa.</p>
+<p><i>Рухає:</i> ставки і те, чи повертають кредити.</p>
+<p><i>Розмір:</i> другий, 12,5% (09.11.2026).</p>
+<p><i>Зв'язок:</i> дає гроші всім іншим. Біда в банках швидко стає бідою всього ринку.</p></div>
+<div class="s"><h4><span class="tk">XLI</span>Industrials</h4>
+<p><i>Що:</i> заводи, літаки, оборона, перевезення.</p>
+<p><i>Приклади:</i> GE Aerospace, Caterpillar, RTX.</p>
+<p><i>Рухає:</i> замовлення бізнесу і держави.</p>
+<p><i>Зв'язок:</i> купує метал у XLB і пальне в XLE, будує дата-центри для XLK.</p></div>
+<div class="s"><h4><span class="tk">XLB</span>Materials</h4>
+<p><i>Що:</i> хімія, метали, будматеріали.</p>
+<p><i>Приклади:</i> Linde, Sherwin-Williams, Freeport-McMoRan.</p>
+<p><i>Рухає:</i> ціни на сировину, долар, попит Китаю.</p>
+<p><i>Зв'язок:</i> стоїть на початку ланцюга: сировина для XLI і будівництва.</p></div>
+<div class="s"><h4><span class="tk">XLE</span>Energy</h4>
+<p><i>Що:</i> нафта і газ.</p>
+<p><i>Приклади:</i> Exxon Mobil, Chevron.</p>
+<p><i>Рухає:</i> ціна нафти.</p>
+<p><i>Розмір:</i> восьмий, 3,5% (09.11.2026): індекс його майже не помічає.</p>
+<p><i>Зв'язок:</i> дорога нафта це плюс йому і мінус перевізникам (XLI) та покупцю (XLY). Ще вона розганяє інфляцію, а та тягне ставки.</p></div>
+</section>
+
+<section class="g g3">
+<h3>Захист</h3>
+<p class="gt">купують, коли страшно: попит на це не зникає</p>
+<div class="s"><h4><span class="tk">XLP</span>Consumer Staples</h4>
+<p><i>Що:</i> їжа, побутове, магазини щоденних покупок.</p>
+<p><i>Приклади:</i> Walmart, Costco, Procter &amp; Gamble.</p>
+<p><i>Рухає:</i> мало що: це купують за будь-якої погоди.</p>
+<p><i>Зв'язок:</i> дзеркало до XLY. Якщо XLP сильніший за XLY, ринок боїться.</p></div>
+<div class="s"><h4><span class="tk">XLV</span>Health Care</h4>
+<p><i>Що:</i> ліки, медстрахування, обладнання.</p>
+<p><i>Приклади:</i> Eli Lilly, Johnson &amp; Johnson, UnitedHealth.</p>
+<p><i>Рухає:</i> політика (ціни на ліки), рішення регулятора FDA, результати випробувань.</p>
+<p><i>Зв'язок:</i> живе своїми новинами, від економіки залежить мало.</p></div>
+<div class="s"><h4><span class="tk">XLU</span>Utilities</h4>
+<p><i>Що:</i> електрика, газ, вода.</p>
+<p><i>Приклади:</i> NextEra Energy, Southern, Duke Energy.</p>
+<p><i>Рухає:</i> ставки: через стабільні дивіденди поводиться як облігація.</p>
+<p><i>Зв'язок:</i> ставки вниз, він угору. Нове: дата-центри AI (XLK) потребують багато електрики.</p></div>
+<div class="s"><h4><span class="tk">XLRE</span>Real Estate</h4>
+<p><i>Що:</i> фонди нерухомості (REIT): склади, вежі зв'язку, дата-центри.</p>
+<p><i>Приклади:</i> Prologis, American Tower, Equinix.</p>
+<p><i>Рухає:</i> ставки: бізнес живе в борг.</p>
+<p><i>Зв'язок:</i> найчутливіший до ФРС, ходить поруч з XLU. Здає будівлі під дата-центри для XLK.</p>
+<p><i>Чесно:</i> у захисті він через дивіденди, а не через спокій: у справжню кризу падає разом з усіма.</p></div>
+</section>
+
+<h3>Шість зв'язків, на яких усе тримається</h3>
+<ol>
+<li><b>Ставки.</b> Ставки вгору: важче XLRE, XLU і ростовим (XLK, XLC, XLY), бо борг дорожчає, а майбутні прибутки сьогодні коштують менше. Банкам (XLF) помірно вищі ставки на руку: вони заробляють на різниці.</li>
+<li><b>Нафта.</b> Дорога нафта: XLE вгору, перевізникам (XLI) і покупцю (XLY) гірше. Вона ж піднімає інфляцію, а інфляція тягне ставки, тобто пункт 1.</li>
+<li><b>Ланцюг AI.</b> Гіганти з XLC і XLY (Alphabet, Meta, Amazon) купують чипи в XLK. Дата-центрам потрібні будівлі (XLRE), обладнання (XLI), електрика (XLU) і мідь (XLB), тому одна новина про витрати на AI рухає пів ринку.</li>
+<li><b>Покупець: XLY проти XLP.</b> Термометр настрою. XLY сильніший: люди витрачають, ринок сміливий. XLP сильніший: ринок ховається.</li>
+<li><b>Долар і Китай.</b> Сировина торгується в доларах, а Китай головний покупець металів. Міцний долар або повільний Китай: гірше XLB і XLE.</li>
+<li><b>Ротація.</b> Гроші рідко виходять з ринку, частіше перетікають між групами: страшно, з росту в захист; спокійно, назад. Тому питання не лише «ринок вгору чи вниз», а «куди сьогодні течуть гроші».</li>
+</ol>
+<p><b>Три питання до будь-якої новини:</b> чий це сектор, що його рухає, кого зачепить далі по зв'язках.</p>
+<p><b>Це скелет, а не закон.</b> Зв'язки працюють зазвичай, не завжди. Де зв'язок ламається, там найкраще питання.</p>
+<p class="src">Ваги: оцінка за складом SPY, не офіційні ваги S&amp;P. Де ваги нема, ще не звірено.</p>
+</div>
+</details>
+
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>ETF</b><small>один тікер, а всередині цілий кошик акцій</small></span></div></div>
+</div>
+</details>
+
+<details class="b" id="rukh">
+<summary><span class="n">3</span><span class="t">Що рухає ціну<small>новини, ставки, потік грошей</small></span></summary>
+<div class="in">
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Попит і пропозиція</b><small>ціна йде туди, де зараз більше охочих</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Звіти компаній</b><small>чотири рази на рік компанія показує цифри, і акція стрибає</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Макро</b><small>ФРС і ставки, інфляція, зайнятість: ціна грошей для всього ринку одразу</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Нафта, долар, геополітика</b><small>зовнішні поштовхи, що б'ють по окремих секторах</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Потік грошей між секторами</b><small>ротація: шість зв'язків уже є в гілці <a href="#sektory">11 секторів</a></small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Календар тижня</b><small>що і коли смикне ринок найближчими днями</small></span></div></div>
+</div>
+</details>
+
+<details class="b" id="order">
+<summary><span class="n">4</span><span class="t">Ордер<small>як заявка стає угодою</small></span></summary>
+<div class="in">
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Типи ордерів</b><small>market: зараз за будь-якою ціною; limit: не гірше за задану; stop: спрацювати на рівні</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Строк життя (TIF)</b><small>скільки заявка чекає: мить, день, до скасування</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Шлях ордера</b><small>роутинг і ECN: куди летить заявка і чому це змінює ціну виконання</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Стакан і стрічка</b><small>хто стоїть у черзі і що щойно пройшло</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Спред і ліквідність</b><small>скільки коштує увійти й вийти просто зараз</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Short</b><small>продати позичене, щоб заробити на падінні</small></span></div></div>
+</div>
+</details>
+
+<details class="b" id="apka">
+<summary><span class="n">5</span><span class="t">Трейдинг-апка<small>робочий інструмент</small></span></summary>
+<div class="in">
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Що на екрані</b><small>графік, стакан, стрічка, позиції</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Гарячі клавіші</b><small>чому швидкість тут важлива і як їх налаштувати</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Швидкий вхід і вихід</b><small>одна клавіша замість п'яти рухів мишкою</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Мінімальне налаштування</b><small>щоб відкрити й закрити ордер</small></span></div></div>
+<p class="note">Росте з твоїх слів: твого робочого екрана тут нема.</p>
+</div>
+</details>
+
+<details class="b" id="stratehii">
+<summary><span class="n">6</span><span class="t">Стратегії й ризик<small>що робити і скільки можна втратити</small></span></summary>
+<div class="in">
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Сетап</b><small>умова, вхід, вихід: одна повторювана ситуація</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Ризик на угоду і стоп</b><small>скільки втрачаєш, якщо не правий</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Розмір позиції</b><small>скільки акцій брати при такому ризику</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Денний ліміт</b><small>межа, після якої день закінчено</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Сімейства стратегій</b><small>імпульс, повернення до середнього, пари, новини</small></span></div></div>
+<p class="note">Яка стратегія буде твоєю, ще не відомо: тут поки лише загальна мова.</p>
+</div>
+</details>
+
+<details class="b" id="treider">
+<summary><span class="n">7</span><span class="t">Трейдер<small>ти сам</small></span></summary>
+<div class="in">
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Стан</b><small>тіло й голова перед екраном</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Дисципліна</b><small>робити те, що вирішив заздалегідь</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Людський фактор</b><small>азарт, страх, бажання відігратись</small></span></div></div>
+<div class="tw"><div class="r"><span class="dot"></span><span class="x"><b>Розбір</b><small>що зробив, чому і що з цього вийшло</small></span></div></div>
+</div>
+</details>
+</main>
+<script>
+(function(){
+  // Читається всюди; у Telegram додає кнопки «Спитати», що шлють назву гілочки в чат.
+  var KEY='derevo.v1',main=document.querySelector('main'),src=main.innerHTML,tg=false,ready=false,tm=0;
+  function ls(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+  function txt(e){return e?e.textContent.replace(/\s+/g,' ').trim():''}
+  function own(e){var a=[];e.childNodes.forEach(function(n){if(n.classList&&n.classList.contains('ask'))return;var s=txt(n);if(s)a.push(s)});return a.join(' ')}
+  function branch(el){var b=el.closest('details.b');return b?txt(b.querySelector('.t').firstChild):''}
+  function twig(el){var t=el.closest('.tw');return t?txt(t.querySelector('.x b')):''}
+  function key(d){return d.id||(branch(d)+'/'+twig(d))}
+  function save(){
+    if(!ready)return;
+    var v=[];
+    document.querySelectorAll('details[open]').forEach(function(d){v.push(key(d))});
+    try{localStorage.setItem(KEY,JSON.stringify({v:v,y:Math.round(window.scrollY)}))}catch(e){}
+  }
+  function restore(){
+    var s=ls(),v=s.v||[];
+    document.querySelectorAll('details').forEach(function(d){if(v.indexOf(key(d))>=0)d.open=true});
+    return s.y||0;
+  }
+  function go(){
+    var h='';
+    try{h=decodeURIComponent(location.hash.slice(1))}catch(e){}
+    if(!/^[\w-]+$/.test(h))return false;
+    var e=document.getElementById(h);
+    if(!e)return false;
+    for(var p=e;p;p=p.parentElement){if(p.tagName==='DETAILS')p.open=true}
+    e.scrollIntoView();
+    return true;
+  }
+  function ask(label,path){
+    var b=document.createElement('button');
+    b.type='button';b.className='ask';b.textContent=label;
+    b.addEventListener('click',function(ev){
+      ev.preventDefault();ev.stopPropagation();
+      var w=window.Telegram&&Telegram.WebApp;
+      if(!w||!w.sendData)return;
+      save();
+      try{w.sendData('Дерево: '+path+'. Поясни просто.')}catch(e){}
+    });
+    return b;
+  }
+  function buttons(){
+    if(document.querySelector('.ask'))return;
+    document.querySelectorAll('.in').forEach(function(box){
+      var g=branch(box);
+      box.querySelectorAll('.tw').forEach(function(t){
+        var n=twig(t),r=t.querySelector('.r');
+        if(r)r.appendChild(ask('Спитати',g+' › '+n));
+        t.querySelectorAll('.s h4').forEach(function(h){h.appendChild(ask('Спитати',g+' › '+n+' › '+own(h)))});
+        t.querySelectorAll('.leaf li').forEach(function(li){
+          var b=li.firstElementChild;
+          if(b&&b.tagName==='B'&&li.firstChild===b)li.appendChild(ask('?',g+' › '+n+' › '+txt(b).replace(/[.:]$/,'')));
+        });
+      });
+      var p=document.createElement('p');
+      p.className='all';p.appendChild(ask('Спитати про всю гілку',g+', уся гілка'));
+      box.appendChild(p);
+    });
+  }
+  function wire(){
+    var z=document.getElementById('zh');
+    if(z)z.addEventListener('click',function(){
+      document.querySelectorAll('details').forEach(function(d){d.open=false});
+      window.scrollTo(0,0);save();
+    });
+    document.querySelectorAll('details').forEach(function(d){d.addEventListener('toggle',save)});
+  }
+  function setup(){wire();var y=restore();if(tg)buttons();return y}
+  function fresh(){
+    // Свіжа версія повз кеш: гілочка, яку щойно дописали, видна одразу.
+    if(!/^https?:$/.test(location.protocol)||!window.fetch||!window.DOMParser)return;
+    fetch(location.pathname+'?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(t){
+      var m=t&&new DOMParser().parseFromString(t,'text/html').querySelector('main');
+      if(!m||m.innerHTML===src)return;
+      save();src=m.innerHTML;main.innerHTML=src;
+      window.scrollTo(0,setup());
+      document.documentElement.setAttribute('data-f','1');
+    }).catch(function(){});
+  }
+  try{tg=/tgWebApp(Data|Version|Platform)=/.test(location.hash)}catch(e){}
+  var y=setup();ready=true;
+  if(!go()&&y)window.scrollTo(0,y);
+  window.addEventListener('hashchange',go);
+  window.addEventListener('pagehide',save);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+  window.addEventListener('scroll',function(){clearTimeout(tm);tm=setTimeout(save,300)},{passive:true});
+  document.addEventListener('DOMContentLoaded',function(){
+    var w=window.Telegram&&Telegram.WebApp;
+    if(!w||!w.platform||w.platform==='unknown')return;
+    try{w.ready();w.expand()}catch(e){}
+    if(!tg){tg=true;buttons()}
+  });
+  fresh();
+})();
+</script>
+</body>
+</html>
